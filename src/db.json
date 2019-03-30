@@ -27,25 +27,25 @@
       "link": "apple"
     }
   ],
-  "wishlist": [{ "id": "1" }, { "id": "2" }, { "id": "3" }],
+  "wishlist": [{ "id": "1" }, { "id": "2" }, { "id": "4" }],
   "users": [
     {
       "uid": "1",
       "username": "a",
       "password": "a",
-      "wishlist": "[1] [2] [3]"
+      "wishlist": [{ "id": "1" }, { "id": "2" }]
     },
     {
       "uid": "2",
       "username": "mrsong",
       "password": "a",
-      "wishlist": "[4] [2] [3]"
+      "wishlist": [{ "id": "2" }, { "id": "4" }, { "id": "5" }]
     },
     {
       "uid": "3",
       "username": "yenmy",
       "password": "a",
-      "wishlist": "[4] [5]"
+      "wishlist": [{ "id": "1" }, { "id": "2" }, { "id": "4" }, { "id": "7" }]
     }
   ],
   "products": [

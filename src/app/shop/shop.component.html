@@ -73,7 +73,7 @@
               <a class="nav-item nav-link ml-2" [routerLink]="['/wishlist']">
                 <i class="fa fa-star"></i> Wish List
                 <span class="text-success" [hidden]="!this.authenticationService.credentials"
-                  >({{ service.getWishlist.length }})</span
+                  >({{ service.mockWishlist?.length }})</span
                 >
               </a>
               <a class="nav-item nav-link ml-2"> <i class="fa fa-shopping-cart"></i> Shopping Cart </a>

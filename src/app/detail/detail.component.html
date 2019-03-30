@@ -1,14 +1,14 @@
 <h4 class="text-center text-black-50 py-2 my-2 header">Product detail</h4>
 <div>
   <div class="border my-2 p-2">
-    <h5 class="text-success text-center">
+    <h5 class="text-success text-center animated flipInY">
       {{ this.foundProduct?.link | replaceStringPipe: '-':' ' | titlecase }}
     </h5>
     <div class="row">
       <div class="col-md-6 p-5">
-        <img class="img-fluid" src="{{ foundProduct?.img_url }}" />
-        <h5 class="text-success text-center">Price: {{ this.foundProduct?.price }}</h5>
-        <div class="circle-list">
+        <img class="img-fluid animated flipInX" src="{{ foundProduct?.img_url }}" />
+        <h5 class="text-success text-center animated bounceInLeft">Price: {{ this.foundProduct?.price }}</h5>
+        <div class="circle-list animated bounceInUp">
           <span class="circle" data-toggle="tooltip" title="Add to cart"> <i class="fa fa-shopping-cart"></i></span>
           <span
             [hidden]="this.authenticationService.credentials"
@@ -37,8 +37,8 @@
         </div>
       </div>
       <div class="col-md-6 p-5">
-        <h6>{{ this.foundProduct?.dsc }}</h6>
-        <p>{{ this.foundProduct?.full_dsc }}</p>
+        <h6 class="animated bounceInRight">{{ this.foundProduct?.dsc }}</h6>
+        <p class="animated bounceInRight">{{ this.foundProduct?.full_dsc }}</p>
       </div>
     </div>
   </div>

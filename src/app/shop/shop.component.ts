@@ -16,6 +16,7 @@ export class ShopComponent implements OnInit {
   ) {}
 
   ngOnInit() {}
+
   logout() {
     this.authenticationService.logout().subscribe(() => this.router.navigate([''], { replaceUrl: true }));
     // this.user = null;

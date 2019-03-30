@@ -72,7 +72,7 @@
               <a class="nav-item nav-link ml-2" [routerLink]="['/shop']"> <i class="fa fa-home"></i> Home </a>
               <a class="nav-item nav-link ml-2">
                 <i class="fa fa-star"></i> Wish List
-                <span class="text-success">({{ service.getWishlist.length }})</span></a
+                <span class="text-success">({{ service.mockWishlist.length }})</span></a
               >
               <a class="nav-item nav-link ml-2"> <i class="fa fa-shopping-cart"></i> Shopping Cart </a>
               <a class="nav-item nav-link ml-2"> <i class="fa fa-check-square"></i> Checkout </a>
@@ -145,7 +145,7 @@
     <div class="col-sm-9">
       <!-- main-contain  -->
       <div class="p-4">
-        <div class="row border-bottom my-2 p-2" *ngFor="let product of service.getWishlist">
+        <div class="row border-bottom my-2 p-2" *ngFor="let product of service.mockWishlist">
           <div class="col-2">
             <img class="img-fluid" src="{{ product?.img_url }}" />
           </div>

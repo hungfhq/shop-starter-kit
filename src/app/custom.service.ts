@@ -1,17 +1,37 @@
 import { Injectable } from '@angular/core';
 import * as data from '../db.json';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomService {
-  getWishlist: any;
-  constructor() {
-    this.getWishlist = this.getData().wishlist.map(s => this.getData().products.find(x => x.id == s.id));
+  mockWishlist: Array<any> = [];
+  items: Observable<any>;
+  constructor(private db: AngularFireDatabase) {
+    this.db
+      .object('/')
+      .valueChanges()
+      .subscribe(x => {
+        this.getData(x);
+        return (this.mockWishlist = this.getData().wishlist.map(s => this.getData().products.find(x => x.id == s.id)));
+      });
   }
   // get data from db file
-  getData() {
-    return data.default;
+  getData(datas?: any) {
+    return datas ? datas : data.default;
+  }
+
+  // return an products (array) of a user
+  getWishlistOfUser(userName?: string) {
+    let productIds: Array<any> = [];
+    let products: Array<any> = [];
+    if (userName) {
+      productIds = this.getData().users.find(u => u.username == userName).wishlist;
+      products = productIds.map(s => this.getData().products.find(x => x.id == s.id));
+    }
+    return products;
   }
 
   // get products by category
@@ -31,16 +51,16 @@ export class CustomService {
     return found;
   };
 
-  addItemToWishlist(product: any) {
-    this.getWishlist.push(product);
-  }
+  addItemToWishlist = (product: any) => {
+    this.mockWishlist.push(product);
+  };
 
   removeItemOutOfWishlist(productId: string) {
-    this.getWishlist.splice(this.getWishlist.indexOf(productId), 1);
+    this.mockWishlist.splice(this.mockWishlist.indexOf(productId), 1);
   }
 
   isExistedInWishlist(productId: string) {
-    return this.getWishlist.find(x => x.id === productId) ? true : false;
+    return this.mockWishlist.find(x => x.id === productId) ? true : false;
   }
 
   getProductById(productId?: string) {

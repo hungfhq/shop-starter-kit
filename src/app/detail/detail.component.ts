@@ -5,8 +5,6 @@ import { AuthenticationService } from '@app/core/authentication/authentication.s
 
 import { Logger } from 'app/core/logger.service';
 
-const log = new Logger('DetailComponent');
-
 @Component({
   selector: 'app-detail',
   templateUrl: './detail.component.html',
