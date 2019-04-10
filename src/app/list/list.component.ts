@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from '@app/core/authentication/authentication.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomService } from '../custom.service';
+import { Product } from '@app/interfaces';
 
 @Component({
   selector: 'app-list',
@@ -8,18 +10,23 @@ import { CustomService } from '../custom.service';
   styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
-  categoryLink: any;
+  products: Array<Product> = [];
+  category: any;
   found: any;
 
-  constructor(private activatedRoute: ActivatedRoute, private router: Router, public service: CustomService) {}
+  constructor(
+    public service: CustomService,
+    public authenticationService: AuthenticationService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-    this.activatedRoute.paramMap.subscribe(para => {
-      this.categoryLink = para.get('category');
-      this.found = this.service
-        .getData()
-        .categories.find((data: { link: any }) => this.categoryLink.includes(data.link));
+    this.route.paramMap.subscribe(para => {
+      this.category = para.get('category');
+      console.log(this.category);
+      this.service.getProducts().subscribe(_products => {
+        this.products = _products.filter(p => p['clink'] === this.category);
+      });
     });
-    !this.found ? this.router.navigate(['/pagenotfound']) : this.router.navigate(['/shop', this.found.link]);
   }
 }

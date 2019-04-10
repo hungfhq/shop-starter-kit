@@ -50,7 +50,7 @@
         </div>
       </div>
       <div class="col-sm-3">
-        <div class="float-right hidden-xs">
+        <div class="float-right">
           <a class="phone" href=""><i class="fa fa-phone fa-rotate-90"></i></a>
           <span class="phone-number">800-2345-6789</span>
         </div>
@@ -60,37 +60,49 @@
 
   <div class="container">
     <div class="row">
-      <div class="col-sm-3"></div>
+      <div class="col-sm-3">
+        <div class="box-heading">
+          <h5><i class="d-none d-sm-inline fas fa-bars"></i> Dashboard</h5>
+        </div>
+      </div>
 
       <div class="col-sm-9">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded-top">
-          <button class="navbar-toggler" type="button" aria-controls="navbar-menu" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div id="navbar-menu" class="collapse navbar-inverse navbar-collapse float-xs-none">
-            <div class="navbar-nav">
-              <a class="nav-item nav-link ml-2" [routerLink]="['/shop']"> <i class="fa fa-home"></i> Home </a>
-              <a class="nav-item nav-link ml-2">
-                <i class="fa fa-star"></i> Wish List
-                <span class="text-success">({{ service.mockWishlist.length }})</span></a
-              >
-              <a class="nav-item nav-link ml-2"> <i class="fa fa-shopping-cart"></i> Shopping Cart </a>
-              <a class="nav-item nav-link ml-2"> <i class="fa fa-check-square"></i> Checkout </a>
-              <div class="nav-item" ngbDropdown placement="bottom-right">
-                <a id="wl-dropdown" class="nav-link" ngbDropdownToggle>
-                  <i class="fa fa-address-book"></i> Logout <i class="fa fa-angle-down"></i>
+        <div class="navigation-bar">
+          <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded-top">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu">
+              <span class="navbar-toggler-icon height-25"></span>
+            </button>
+            <div id="navbar-menu" class="collapse navbar-collapse">
+              <div class="navbar-nav">
+                <a class="nav-item nav-link ml-2" [routerLink]="['/shop']"> <i class="fa fa-home"></i> Home </a>
+
+                <a class="nav-item nav-link ml-2" [routerLink]="['/wishlist']">
+                  <i class="fa fa-star"></i> Wish List
                 </a>
-                <div ngbDropdownMenu aria-labelledby="wl-dropdown">
-                  <h6 class="dropdown-header">
-                    <span>Logged in as</span> <span class="text-danger">{{ username }}</span>
-                  </h6>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" (click)="logout()">Logout</a>
+                <a class="nav-item nav-link ml-2"> <i class="fa fa-shopping-cart"></i> Shopping Cart </a>
+                <a class="nav-item nav-link ml-2"> <i class="fa fa-check-square"></i> Checkout </a>
+                <div
+                  class="nav-item"
+                  ngbDropdown
+                  placement="bottom-right"
+                  [hidden]="!this.authenticationService.credentials"
+                >
+                  <a id="wl-dropdown" class="nav-item nav-link ml-2" ngbDropdownToggle>
+                    <i class="fa fa-address-book"></i> Logout <i class="fa fa-angle-down"></i>
+                  </a>
+                  <div ngbDropdownMenu aria-labelledby="wl-dropdown">
+                    <h6 class="dropdown-header">
+                      <span>Logged in as</span>
+                      <span class="text-danger">{{ this.authenticationService.credentials?.username }}</span>
+                    </h6>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" (click)="logout()">Logout</a>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </nav>
+          </nav>
+        </div>
       </div>
     </div>
   </div>
@@ -98,15 +110,14 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-3">
-      <div class="box-heading">
-        <h4><i class="fas fa-bars hidden-xs"></i> Dashboard</h4>
-      </div>
-
       <!-- Account menu-left -->
       <div class="hidden-xs">
         <div class="header heading-left-menu">
           <p>
             Hello <span class="text-danger">{{ username }}</span>
+            <span class="text-success" [hidden]="!this.authenticationService.credentials"
+              >({{ service.editableUser?.wishlist.length }})</span
+            >
           </p>
         </div>
         <div class="header">
@@ -145,7 +156,7 @@
     <div class="col-sm-9">
       <!-- main-contain  -->
       <div class="p-4">
-        <div class="row border-bottom my-2 p-2" *ngFor="let product of service.mockWishlist">
+        <div class="row border-bottom my-2 p-2" *ngFor="let product of wishlist">
           <div class="col-2">
             <img class="img-fluid" src="{{ product?.img_url }}" />
           </div>
@@ -154,7 +165,12 @@
               product?.link
             }}</a>
             <p>{{ product?.dsc }}</p>
-            <a (click)="this.service.removeItemOutOfWishlist(product.id)"><i class="fa fa-trash fa-2x"></i></a>
+            <a
+              (mouseenter)="service.getProductById(product.pid)"
+              (click)="service.toggleWishlistButton2(this.service.editableUser.uid, product.pid)"
+              [routerLink]="['/wishlist']"
+              ><i class="fa fa-trash fa-2x"></i
+            ></a>
           </div>
           <div class="col-2 py-3">
             <h6 class="text-center text-success">{{ product?.price }}</h6>

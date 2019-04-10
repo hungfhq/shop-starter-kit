@@ -5,6 +5,7 @@ import { finalize } from 'rxjs/operators';
 
 import { environment } from '@env/environment';
 import { Logger, I18nService, AuthenticationService } from '@app/core';
+import { CustomService } from '@app/custom.service';
 
 const log = new Logger('Login');
 
@@ -18,22 +19,39 @@ export class LoginComponent implements OnInit {
   error: string;
   loginForm: FormGroup;
   isLoading = false;
+  saved: string;
+  users: Array<any[]>;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private formBuilder: FormBuilder,
     private i18nService: I18nService,
-    private authenticationService: AuthenticationService
+    private authenticationService: AuthenticationService,
+    private service: CustomService
   ) {
     this.createForm();
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.authenticationService.isAuthenticated()) {
+      this.router.navigate(['/shop'], { replaceUrl: true });
+    }
+
+    this.service.getUsers().subscribe(_user => {
+      this.users = _user;
+    });
+
+    // console.log('credentials ' + this.authenticationService.credentials);
+    // console.log('isAuthenticated ' + this.authenticationService.isAuthenticated());
+    // console.log('cookie ' + this.authenticationService.getCookie('username'));
+  }
 
   login() {
+    if (!this.service.checkExistedUser(this.users, this.loginForm.value.username, this.loginForm.value.password)) {
+      this.loginForm.setValue({ username: '', password: '', remember: false });
+    }
     this.isLoading = true;
-    // console.log("asds",this.loginForm.value);
     this.authenticationService
       .login(this.loginForm.value)
       .pipe(
@@ -44,11 +62,14 @@ export class LoginComponent implements OnInit {
       )
       .subscribe(
         credentials => {
-          log.debug(`${credentials.username} successfully logged in`);
-          this.route.queryParams.subscribe(
-            params => this.router.navigate(['/wishlist'], { replaceUrl: true })
-            //  this.router.navigate([params.redirect || '/'], { replaceUrl: true })
-          );
+          if (`${credentials.username}` === '') {
+            this.error = ' ';
+          } else {
+            log.debug(`${credentials.username} successfully logged in`);
+            this.route.queryParams.subscribe(_params => {
+              return this.router.navigate(['/wishlist'], { replaceUrl: true });
+            });
+          }
         },
         error => {
           log.debug(`Login error: ${error}`);
@@ -70,10 +91,15 @@ export class LoginComponent implements OnInit {
   }
 
   private createForm() {
+    // this.loginForm = this.formBuilder.group({
+    //   username: ['', Validators.required],
+    //   password: ['', Validators.required],
+    //   remember: true
+    // });
     this.loginForm = this.formBuilder.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required],
-      remember: true
+      username: [this.authenticationService.getCookie('username'), Validators.required],
+      password: [this.authenticationService.getCookie('password'), Validators.required],
+      remember: false
     });
   }
 }

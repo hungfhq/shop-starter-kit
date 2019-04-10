@@ -19,7 +19,95 @@
 // Custom css
 @import "./custom.scss";
 
-*:focus {
-  outline: none !important;
-  box-shadow: none !important;
+.header {
+  background: #f2f2f2;
+  width: 100%;
+}
+// Circle list icon
+.circle {
+  height: 38px;
+  width: 38px;
+  background-color: #f2f2f2;
+  border-radius: 50%;
+  display: inline-block;
+  padding: 10px;
+  margin-right: 6px;
+  margin-top: 20px;
+  font-size: 1.5em;
+  &:hover {
+    background: #777;
+    color: #fff;
+    cursor: pointer;
+    i {
+      color: #fff;
+    }
+  }
+  i {
+    color: #c2c2c2;
+  }
+}
+.circle-active {
+  height: 38px;
+  width: 38px;
+  background-color: #19caaf;
+  border-radius: 50%;
+  display: inline-block;
+  padding: 10px;
+  margin-right: 6px;
+  margin-top: 20px;
+  font-size: 1.5em;
+  &:hover {
+    cursor: pointer;
+  }
+  i {
+    color: #fff;
+  }
+}
+.circle-disabled {
+  height: 38px;
+  width: 38px;
+  background-color: #d2d2d2;
+  border-radius: 50%;
+  display: inline-block;
+  padding: 10px;
+  margin-right: 6px;
+  margin-top: 20px;
+  font-size: 1.5em;
+  &:hover {
+    cursor: pointer;
+  }
+  i {
+    color: #fff;
+  }
+}
+
+/* search styles */
+.search-result li {
+  height: 30px;
+  background-color: rgba($color: #fff, $alpha: 1);
+  cursor: pointer;
+  list-style-type: none;
+  &:hover {
+    background-color: #607d8b;
+  }
+  a {
+    color: #000;
+    display: block;
+    text-decoration: none;
+    padding: 5px;
+    &:hover {
+      color: #f2f2f2;
+    }
+    &:active {
+      color: white;
+    }
+  }
+}
+
+ul.search-result {
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 1;
+  width: 76%;
 }

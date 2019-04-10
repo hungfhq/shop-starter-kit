@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { CustomService } from '@app/custom.service';
 
 export interface Credentials {
   // Customize received credentials here
   username: string;
+  password: string;
   token: string;
 }
 
@@ -22,6 +24,9 @@ const credentialsKey = 'credentials';
 @Injectable()
 export class AuthenticationService {
   private _credentials: Credentials | null;
+  private _context: LoginContext | null;
+  private data: Credentials | null;
+  private service: CustomService;
 
   constructor() {
     const savedCredentials = sessionStorage.getItem(credentialsKey) || localStorage.getItem(credentialsKey);
@@ -36,13 +41,31 @@ export class AuthenticationService {
    * @return The user credentials.
    */
   login(context: LoginContext): Observable<Credentials> {
-    // Replace by proper authentication call
-    const data = {
-      username: context.username,
-      token: '123456'
-    };
-    this.setCredentials(data, context.remember);
-    return of(data);
+    this._context = context;
+    console.log(context.username, context.password);
+    if (context.username !== '') {
+      this.data = {
+        username: context.username,
+        password: context.password,
+        token: '123456'
+      };
+      if (context.remember) {
+        this.setCookie('username', context.username, 1);
+        this.setCookie('password', context.password, 1);
+        localStorage.setItem('rememberKey', JSON.stringify(context.remember));
+      } else {
+        this.setCookie('username', '', 0);
+        this.setCookie('password', '', 0);
+      }
+      this.setCredentials(this.data, context.remember);
+    } else {
+      this.data = {
+        username: '',
+        password: '',
+        token: ''
+      };
+    }
+    return of(this.data);
   }
 
   /**
@@ -52,6 +75,11 @@ export class AuthenticationService {
   logout(): Observable<boolean> {
     // Customize credentials invalidation here
     this.setCredentials();
+    // if (localStorage.getItem('rememberKey')) {
+    //   this.setCredentials(null, this._context.remember);
+    // } else {
+    //   this.setCredentials();
+    // }
     return of(true);
   }
 
@@ -71,6 +99,28 @@ export class AuthenticationService {
     return this._credentials;
   }
 
+  setCookie(cname: string, cvalue: string, exdays: number) {
+    const d = new Date();
+    d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+    const expires = 'expires=' + d.toUTCString();
+    document.cookie = cname + '=' + cvalue + '; ' + expires;
+  }
+
+  getCookie(cname: string) {
+    const name = cname + '=';
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) === 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return '';
+  }
+
   /**
    * Sets the user credentials.
    * The credentials may be persisted across sessions by setting the `remember` parameter to true.
@@ -85,8 +135,11 @@ export class AuthenticationService {
       const storage = remember ? localStorage : sessionStorage;
       storage.setItem(credentialsKey, JSON.stringify(credentials));
     } else {
-      sessionStorage.removeItem(credentialsKey);
-      localStorage.removeItem(credentialsKey);
+      // sessionStorage.removeItem(credentialsKey);
+      sessionStorage.clear();
+      if (!remember) {
+        localStorage.removeItem(credentialsKey);
+      }
     }
   }
 }

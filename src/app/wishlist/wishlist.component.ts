@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CustomService } from '@app/custom.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from '@app/core';
+import { User, Product } from '../interfaces';
 
 @Component({
   selector: 'app-wishlist',
@@ -9,13 +10,32 @@ import { AuthenticationService } from '@app/core';
   styleUrls: ['./wishlist.component.scss']
 })
 export class WishListComponent implements OnInit {
+  userName: string;
+  user: User;
+  wishlist: Array<Product>;
   constructor(
-    private authenticationService: AuthenticationService,
+    public authenticationService: AuthenticationService,
+    private activatedRoute: ActivatedRoute,
     private router: Router,
     public service: CustomService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.userName = this.authenticationService.credentials.username;
+
+    this.service.getUsers().subscribe(_users => {
+      // console.log('onInit ' + this.userName);
+      this.user = _users.find(u => u['username'] === this.userName);
+      // _users.map(u => console.log(u));
+      this.service.editableUser = this.user;
+      this.service.getProducts().subscribe(_products => {
+        this.wishlist = [];
+        this.service.editableUser.wishlist.map((element: any) => {
+          this.wishlist.push(_products.find(p => p.pid === element));
+        });
+      });
+    });
+  }
 
   get username(): string | null {
     const credentials = this.authenticationService.credentials;

@@ -1,93 +1,171 @@
 import { Injectable } from '@angular/core';
-import * as data from '../db.json';
-import { AngularFireDatabase } from '@angular/fire/database';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { User, Product } from './interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomService {
-  mockWishlist: Array<any> = [];
-  items: Observable<any>;
-  constructor(private db: AngularFireDatabase) {
-    this.db
-      .object('/')
-      .valueChanges()
-      .subscribe(x => {
-        this.getData(x);
-        return (this.mockWishlist = this.getData().wishlist.map(s => this.getData().products.find(x => x.id == s.id)));
-      });
-  }
-  // get data from db file
-  getData(datas?: any) {
-    return datas ? datas : data.default;
+  itemsCollection: AngularFirestoreCollection<any[]>;
+  items$: Observable<any[]>;
+  itemDoc: AngularFirestoreDocument<any>;
+  editableUser: User;
+  editableProduct: Product;
+
+  constructor(private afs: AngularFirestore) {}
+
+  getProducts(): Observable<Product[]> {
+    this.itemsCollection = this.afs.collection('products', ref => ref.orderBy('pid', 'asc'));
+    this.items$ = this.itemsCollection.snapshotChanges().pipe(
+      map(actions =>
+        actions.map(a => {
+          const data = a.payload.doc.data() as any;
+          const id = a.payload.doc.id;
+          return { id, ...data };
+        })
+      )
+    );
+    return this.items$;
   }
 
-  // return an products (array) of a user
-  getWishlistOfUser(userName?: string) {
-    let productIds: Array<any> = [];
-    let products: Array<any> = [];
-    if (userName) {
-      productIds = this.getData().users.find(u => u.username == userName).wishlist;
-      products = productIds.map(s => this.getData().products.find(x => x.id == s.id));
+  getCategories(): Observable<any[]> {
+    this.itemsCollection = this.afs.collection('categories', ref => ref.orderBy('link', 'asc'));
+    this.items$ = this.itemsCollection.valueChanges();
+    return this.items$;
+  }
+
+  getUsers(): Observable<any[]> {
+    this.itemsCollection = this.afs.collection('users');
+    this.items$ = this.itemsCollection.snapshotChanges().pipe(
+      map(actions =>
+        actions.map(a => {
+          const data = a.payload.doc.data() as any;
+          const id = a.payload.doc.id;
+          return { id, ...data };
+        })
+      )
+    );
+    return this.items$;
+  }
+
+  checkExistedUser(users: any[], username: string, password: string) {
+    let user: User;
+    console.log('checkE', username, password);
+    user = users.find(u => u.username === username);
+    if (user) {
+      if (user.password === password) {
+        return true;
+      }
     }
-    return products;
+    return false;
   }
 
-  // get products by category
-  getProductsByCatLink = (categoryLink: string) => {
-    let products: Array<any> = [];
-    this.getData().products.forEach((product: { clink: string }) => {
-      if (product.clink === categoryLink) products.push(product);
-    });
-    return products;
-  };
+  updateUser(item: any) {
+    this.itemDoc = this.afs.doc(`users/${item.id}`);
+    this.itemDoc.update(item);
+  }
 
-  getProductByLink = (productLink: string) => {
-    let found;
-    this.getData().products.forEach((product: { link: string }) => {
-      if (product.link === productLink) found = product;
-    });
-    return found;
-  };
+  updateProduct(item: any) {
+    this.itemDoc = this.afs.doc(`products/${item.id}`);
+    this.itemDoc.update(item);
+  }
 
-  addItemToWishlist = (product: any) => {
-    this.mockWishlist.push(product);
+  addItemToWishlist = (productId: string) => {
+    if (this.editableUser) {
+      this.editableUser.wishlist.push(productId);
+      this.updateUser(this.editableUser);
+    }
   };
 
   removeItemOutOfWishlist(productId: string) {
-    this.mockWishlist.splice(this.mockWishlist.indexOf(productId), 1);
+    if (this.editableUser) {
+      // console.log(productId);
+      this.editableUser.wishlist.map(i => console.log('i' + i));
+      this.editableUser.wishlist.splice(this.editableUser.wishlist.indexOf(productId), 1);
+      this.updateUser(this.editableUser);
+    }
   }
 
   isExistedInWishlist(productId: string) {
-    return this.mockWishlist.find(x => x.id === productId) ? true : false;
+    if (this.editableUser) {
+      if (productId) {
+        return this.editableUser.wishlist.find((x: string) => x === productId) ? true : false;
+      } else {
+        return false;
+      }
+    }
+  }
+  // Handle wishedby array of a product
+  addUserToWished(userId: string) {
+    // if (this.editableProduct) {
+    this.editableProduct.wishedby.push(userId);
+    console.log('add user to wished');
+    this.updateProduct(this.editableProduct);
+    // }
   }
 
-  getProductById(productId?: string) {
-    return this.getData()
-      .products.map(p => p)
-      .find((x: { id: string }) => x.id === productId);
+  removeItemOutOfWished(userId: string) {
+    // if (this.editableProduct) {
+    this.editableProduct.wishedby.splice(this.editableProduct.wishedby.indexOf(userId), 1);
+    console.log('remove out of wished');
+    this.updateProduct(this.editableProduct);
+    // }
   }
 
-  // contain = (searchStr: string, str: string) => {
-  //   return new RegExp(searchStr).test(str);
-  // };
+  toggleWishlistButton(productId: string) {
+    if (this.isExistedInWishlist(productId)) {
+      this.removeItemOutOfWishlist(productId);
+      console.log('removed');
+    } else {
+      this.addItemToWishlist(productId);
+      console.log('added');
+    }
+  }
+  // toogleWishlist and remove item out of wishlist
+  toggleWishlistButton2(userId: string, productId: string) {
+    console.log(productId);
+    // this.getProductById(productId);
+    console.log(this.editableProduct);
+    if (this.editableProduct) {
+      if (this.isExistedInWishlist(productId)) {
+        this.removeItemOutOfWishlist(productId);
+        this.removeItemOutOfWished(userId);
+        console.log('removed');
+      } else {
+        this.addItemToWishlist(productId);
+        this.addUserToWished(userId);
+        console.log('added');
+      }
+    }
+  }
 
-  isLinkExisted = (link?: string) => {
-    let existed;
-    existed = this.getData().products.find((p: { link: string }) => link.includes(p.link));
-    return existed ? true : false;
-  };
+  getProductById(productId: string) {
+    this.getProducts().subscribe(_products => {
+      this.editableProduct = _products.find(p => p.pid === productId);
+      // console.log(this.editableProduct);
+    });
+  }
+  // // contain = (searchStr: string, str: string) => {
+  // //   return new RegExp(searchStr).test(str);
+  // // };
 
-  isCategoryExisted = (categoryLink?: string) => {
-    let existed;
-    existed = this.getData().products.find((p: { clink: string }) => categoryLink.includes(p.clink));
-    return existed ? true : false;
-  };
+  // isLinkExisted = (link?: string) => {
+  //   let existed;
+  //   existed = this.getData().products.find((p: { link: string }) => link.includes(p.link));
+  //   return existed ? true : false;
+  // }
 
-  isBrandExisted = (brandLink?: string) => {
-    let existed;
-    existed = this.getData().products.find((p: { blink: string }) => brandLink.includes(p.blink));
-    return existed ? true : false;
-  };
+  // isCategoryExisted = (categoryLink?: string) => {
+  //   let existed;
+  //   existed = this.getData().products.find((p: { clink: string }) => categoryLink.includes(p.clink));
+  //   return existed ? true : false;
+  // }
+
+  // isBrandExisted = (brandLink?: string) => {
+  //   let existed;
+  //   existed = this.getData().products.find((p: { blink: string }) => brandLink.includes(p.blink));
+  //   return existed ? true : false;
+  // }
 }
