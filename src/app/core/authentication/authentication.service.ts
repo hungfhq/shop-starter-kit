@@ -74,12 +74,12 @@ export class AuthenticationService {
    */
   logout(): Observable<boolean> {
     // Customize credentials invalidation here
-    this.setCredentials();
-    // if (localStorage.getItem('rememberKey')) {
-    //   this.setCredentials(null, this._context.remember);
-    // } else {
-    //   this.setCredentials();
-    // }
+    // this.setCredentials();
+    if (localStorage.getItem('rememberKey')) {
+      this.setCredentials(null, this._context.remember);
+    } else {
+      this.setCredentials();
+    }
     return of(true);
   }
 
