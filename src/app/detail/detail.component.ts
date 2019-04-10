@@ -16,10 +16,10 @@ export class DetailComponent implements OnInit {
   brand: any;
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
     public service: CustomService,
-    public authenticationService: AuthenticationService
+    public authenticationService: AuthenticationService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -34,6 +34,10 @@ export class DetailComponent implements OnInit {
         // console.log(this.foundProduct);
         if (!this.foundProduct) {
           this.router.navigate(['pagenotfound']);
+        } else {
+          if (this.category !== this.foundProduct.clink || this.brand !== this.foundProduct.blink) {
+            this.router.navigate(['pagenotfound']);
+          }
         }
       });
     });

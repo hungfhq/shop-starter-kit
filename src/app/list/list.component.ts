@@ -17,15 +17,19 @@ export class ListComponent implements OnInit {
   constructor(
     public service: CustomService,
     public authenticationService: AuthenticationService,
-    private route: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe(para => {
+    this.activatedRoute.paramMap.subscribe(para => {
       this.category = para.get('category');
-      console.log(this.category);
       this.service.getProducts().subscribe(_products => {
         this.products = _products.filter(p => p['clink'] === this.category);
+        if (this.products.length === 0) {
+          console.log(this.products);
+          this.router.navigate(['pagenotfound']);
+        }
       });
     });
   }
