@@ -142,11 +142,11 @@
             <span class="text-danger">
               {{ this.authenticationService.credentials?.username }}
             </span>
-            <span class="text-success">({{ wishlistLength }}) </span
-            ><span class="text-danger" (click)="logout()">Log out</span>
+            <span class="text-success" [hidden]="!this.wishlistLength">({{ wishlistLength }}) </span>
+            <a class="text-info" (click)="logout()">Log out</a>
           </p>
         </div>
-        <div class="header d-none d-xs-none d-sm-none">
+        <div class="header d-none d-xs-none d-sm-block">
           <ul>
             <li class="cat-item" [hidden]="this.authenticationService.credentials">
               <a [routerLink]="['/login']"><i class="fas fa-angle-right"></i>Login</a>

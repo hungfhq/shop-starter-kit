@@ -22,8 +22,8 @@ export class ShopComponent implements OnInit {
 
   constructor(
     public service: CustomService,
-    private router: Router,
-    public authenticationService: AuthenticationService
+    public authenticationService: AuthenticationService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -41,7 +41,7 @@ export class ShopComponent implements OnInit {
     this.service.getProducts().subscribe(products => {
       this.products = products;
     });
-
+    this.wishlistLength = 0;
     if (this.service.editableUser) {
       this.wishlistLength = this.service.editableUser.wishlist.length;
     } else if (localStorage) {
