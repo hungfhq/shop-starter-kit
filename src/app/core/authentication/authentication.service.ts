@@ -50,12 +50,12 @@ export class AuthenticationService {
         token: '123456'
       };
       if (context.remember) {
-        this.setCookie('username', context.username, 1);
-        this.setCookie('password', context.password, 1);
+        // this.setCookie('username', context.username, 1);
+        // this.setCookie('password', context.password, 1);
         localStorage.setItem('rememberKey', JSON.stringify(context.remember));
       } else {
-        this.setCookie('username', '', 0);
-        this.setCookie('password', '', 0);
+        // this.setCookie('username', '', 0);
+        // this.setCookie('password', '', 0);
         localStorage.setItem('rememberKey', 'false');
       }
       this.setCredentials(this.data, context.remember);
