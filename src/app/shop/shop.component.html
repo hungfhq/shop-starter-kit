@@ -1,4 +1,4 @@
-<header>
+<header class="header">
   <div class="container">
     <ul class="top-list float-right">
       <li class="top-list-item">
@@ -135,19 +135,18 @@
         </ul>
       </div>
       <!-- Account menu-left -->
-      <div class="hidden-xs">
-        <div class="header heading-left-menu">
+      <div>
+        <div class="header heading-left-menu" [hidden]="!this.authenticationService.credentials">
           <p>
             Account
             <span class="text-danger">
               {{ this.authenticationService.credentials?.username }}
             </span>
-            <span class="text-success" [hidden]="!this.authenticationService.credentials"
-              >({{ service.editableUser?.wishlist.length }})</span
-            >
+            <span class="text-success">({{ wishlistLength }}) </span
+            ><span class="text-danger" (click)="logout()">Log out</span>
           </p>
         </div>
-        <div class="header">
+        <div class="header d-none d-xs-none d-sm-none">
           <ul>
             <li class="cat-item" [hidden]="this.authenticationService.credentials">
               <a [routerLink]="['/login']"><i class="fas fa-angle-right"></i>Login</a>
@@ -173,7 +172,8 @@
   </div>
   <!-- end main-row -->
 </div>
-<pre>
-05:21:02
-  April 11, 2019</pre
->
+<footer>
+  <div class="container text-right">
+    <pre>23:55  April 11, 2019</pre>
+  </div>
+</footer>

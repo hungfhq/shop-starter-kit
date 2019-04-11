@@ -15,6 +15,7 @@ export class ShopComponent implements OnInit {
   categories: Array<any[]>;
   products$: Observable<any[]>;
   products: any[];
+  wishlistLength = 0;
 
   public show = 'block';
   private searchTerms = new Subject<string>();
@@ -39,13 +40,13 @@ export class ShopComponent implements OnInit {
 
     this.service.getProducts().subscribe(products => {
       this.products = products;
-      // this.products = this.products.filter(p => {
-      //   return p.link.includes('on');
-      // });
-      // this.products$ = of(this.products);
     });
 
-    // this.products$ = this.searchProducts('canon');
+    if (this.service.editableUser) {
+      this.wishlistLength = this.service.editableUser.wishlist.length;
+    } else if (localStorage) {
+      this.wishlistLength = parseInt(localStorage.getItem('wishlistLength'), 10);
+    }
   }
 
   delayBlur() {

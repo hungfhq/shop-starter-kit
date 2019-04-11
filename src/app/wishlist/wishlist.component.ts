@@ -33,6 +33,7 @@ export class WishListComponent implements OnInit {
         this.service.editableUser.wishlist.map((element: any) => {
           this.wishlist.push(_products.find(p => p.pid === element));
         });
+        localStorage.setItem('wishlistLength', JSON.stringify(this.wishlist.length));
       });
     });
   }

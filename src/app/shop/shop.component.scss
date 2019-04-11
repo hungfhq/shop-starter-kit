@@ -34,12 +34,6 @@ li {
   list-style: none;
 }
 
-header {
-  background: $color_header;
-  width: 100%;
-  padding-top: 19px;
-}
-
 a.dropdown-menu-item {
   &:hover {
     background: $color_link_hover;
@@ -52,19 +46,6 @@ a.dropdown-menu-item {
   position: fixed;
   z-index: 3;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.175);
-}
-
-.header {
-  background: #f2f2f2;
-  width: 100%;
-  i#soundAccordion {
-    color: #777;
-    float: right;
-    &:hover {
-      cursor: pointer;
-      color: #19caaf;
-    }
-  }
 }
 
 #accordionUl > a {
@@ -294,24 +275,6 @@ li.cat-item i.fa-angle-down {
   .custom-navbar .navbar-collapse {
     clear: both;
     float: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .box-heading {
-    margin-top: 10px;
-  }
-
-  .box-heading h4 {
-    text-transform: uppercase;
-  }
-
-  .main-product {
-    padding-left: 100px;
-  }
-
-  footer .col-sm-6 {
-    padding: 4px;
   }
 }
 

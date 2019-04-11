@@ -22,6 +22,24 @@
 .header {
   background: #f2f2f2;
   width: 100%;
+  i#soundAccordion {
+    color: #777;
+    float: right;
+    &:hover {
+      cursor: pointer;
+      color: #19caaf;
+    }
+  }
+}
+
+header {
+  padding-top: 25px;
+}
+
+footer {
+  background: #f2f2f2;
+  width: 100%;
+  padding: 20px 0 20px 0;
 }
 // Circle list icon
 .circle {
@@ -110,4 +128,26 @@ ul.search-result {
   position: absolute;
   z-index: 1;
   width: 76%;
+}
+
+@media (max-width: 768px) {
+  .box-heading {
+    margin-top: 10px;
+  }
+
+  .box-heading h4 {
+    text-transform: uppercase;
+  }
+
+  .main-product {
+    padding-left: 100px;
+  }
+
+  footer .col-sm-6 {
+    padding: 4px;
+  }
+
+  header {
+    padding-top: 50px !important;
+  }
 }

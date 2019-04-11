@@ -76,7 +76,7 @@ export class AuthenticationService {
     // Customize credentials invalidation here
     // this.setCredentials();
     if (localStorage.getItem('rememberKey')) {
-      this.setCredentials(null, this._context.remember);
+      this.setCredentials(null, JSON.parse(localStorage.getItem('rememberKey')));
     } else {
       this.setCredentials();
     }
