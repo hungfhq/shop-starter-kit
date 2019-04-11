@@ -56,6 +56,7 @@ export class AuthenticationService {
       } else {
         this.setCookie('username', '', 0);
         this.setCookie('password', '', 0);
+        localStorage.setItem('rememberKey', 'false');
       }
       this.setCredentials(this.data, context.remember);
     } else {
@@ -135,10 +136,11 @@ export class AuthenticationService {
       const storage = remember ? localStorage : sessionStorage;
       storage.setItem(credentialsKey, JSON.stringify(credentials));
     } else {
-      // sessionStorage.removeItem(credentialsKey);
+      localStorage.removeItem(credentialsKey);
+      localStorage.removeItem('wishlistLength');
       sessionStorage.clear();
       if (!remember) {
-        localStorage.removeItem(credentialsKey);
+        localStorage.clear();
       }
     }
   }

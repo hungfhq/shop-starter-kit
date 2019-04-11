@@ -41,7 +41,6 @@ export class ShopComponent implements OnInit {
     this.service.getProducts().subscribe(products => {
       this.products = products;
     });
-    this.wishlistLength = 0;
     if (this.service.editableUser) {
       this.wishlistLength = this.service.editableUser.wishlist.length;
     } else if (localStorage) {
