@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { CustomService } from '@app/custom.service';
+import SimpleCrypto from 'simple-crypto-js';
+
+const secretKey = 'secret';
+const simpleCrypto = new SimpleCrypto(secretKey);
 
 export interface Credentials {
   // Customize received credentials here
@@ -42,7 +46,6 @@ export class AuthenticationService {
    */
   login(context: LoginContext): Observable<Credentials> {
     this._context = context;
-    console.log(context.username, context.password);
     if (context.username !== '') {
       this.data = {
         username: context.username,
@@ -133,8 +136,15 @@ export class AuthenticationService {
     this._credentials = credentials || null;
 
     if (credentials) {
+      const encryptedCredentials: Credentials = {
+        username: credentials.username,
+        password: simpleCrypto.encrypt(credentials.password),
+        token: credentials.token
+      };
       const storage = remember ? localStorage : sessionStorage;
-      storage.setItem(credentialsKey, JSON.stringify(credentials));
+      // storage.setItem(credentialsKey, JSON.stringify(credentials));
+      storage.setItem(credentialsKey, JSON.stringify(encryptedCredentials));
+      storage.setItem('en_credentials', JSON.stringify(encryptedCredentials));
     } else {
       localStorage.removeItem(credentialsKey);
       localStorage.removeItem('wishlistLength');

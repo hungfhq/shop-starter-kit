@@ -6,7 +6,7 @@
     </h5>
     <div class="row">
       <div class="col-md-6 p-5">
-        <img class="img-fluid animated flipInX" src="{{ foundProduct?.img_url }}" />
+        <img class="img-fluid animated flipInX" loading="lazy" src="{{ foundProduct?.img_url }}" />
         <h5 class="text-success text-center animated bounceInLeft">Price: {{ foundProduct?.price }}</h5>
         <div class="circle-list">
           <span class="circle" placement="top" ngbTooltip="Add to cart"> <i class="fa fa-shopping-cart"></i></span>
@@ -23,7 +23,7 @@
             [hidden]="!this.authenticationService.credentials"
             [class]="service.isExistedInWishlist(foundProduct?.pid) ? 'circle-active' : 'circle'"
             (mouseenter)="service.getProductById(foundProduct.pid)"
-            (click)="service.toggleWishlistButton2(this.service.editableUser.uid, foundProduct.pid)"
+            (click)="service.toggleWishlistButton2(this.service.editableUser?.uid, foundProduct?.pid)"
             placement="top"
             ngbTooltip="{{ foundProduct?.wishedby.length }}"
           >

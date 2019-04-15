@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { User, Product } from './interfaces';
+import { sha256 } from 'js-sha256';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +16,7 @@ export class CustomService {
   editableUser: User;
   editableProduct: Product;
 
-  constructor(private afs: AngularFirestore) {}
+  constructor(private afs: AngularFirestore, private router: Router) {}
 
   getProducts(): Observable<Product[]> {
     this.itemsCollection = this.afs.collection('products', ref => ref.orderBy('pid', 'asc'));
@@ -52,7 +54,7 @@ export class CustomService {
 
   checkExistedUser(users: any[], username: string, password: string) {
     let user: User;
-    console.log('checkE', username, password);
+    password = sha256(password);
     user = users.find(u => u.username === username);
     if (user) {
       if (user.password === password) {
@@ -81,8 +83,6 @@ export class CustomService {
 
   removeItemOutOfWishlist(productId: string) {
     if (this.editableUser) {
-      // console.log(productId);
-      this.editableUser.wishlist.map(i => console.log('i' + i));
       this.editableUser.wishlist.splice(this.editableUser.wishlist.indexOf(productId), 1);
       this.updateUser(this.editableUser);
     }
@@ -91,27 +91,33 @@ export class CustomService {
   isExistedInWishlist(productId: string) {
     if (this.editableUser) {
       if (productId) {
-        return this.editableUser.wishlist.find((x: string) => x === productId) ? true : false;
-      } else {
-        return false;
+        return this.editableUser.wishlist.find((x: string) => x === productId);
       }
     }
   }
   // Handle wishedby array of a product
   addUserToWished(userId: string) {
-    // if (this.editableProduct) {
-    this.editableProduct.wishedby.push(userId);
-    console.log('add user to wished');
-    this.updateProduct(this.editableProduct);
-    // }
+    if (this.editableProduct) {
+      this.editableProduct.wishedby.push(userId);
+      console.log('add user to wished');
+      this.updateProduct(this.editableProduct);
+    }
   }
 
   removeItemOutOfWished(userId: string) {
-    // if (this.editableProduct) {
-    this.editableProduct.wishedby.splice(this.editableProduct.wishedby.indexOf(userId), 1);
-    console.log('remove out of wished');
-    this.updateProduct(this.editableProduct);
-    // }
+    if (this.editableProduct) {
+      this.editableProduct.wishedby.splice(this.editableProduct.wishedby.indexOf(userId), 1);
+      console.log('remove out of wished');
+      this.updateProduct(this.editableProduct);
+    }
+  }
+
+  isExistedOnWished(userId: string) {
+    if (this.editableProduct) {
+      if (userId) {
+        return this.editableProduct.wishedby.find((u: string) => u === userId);
+      }
+    }
   }
 
   toggleWishlistButton(productId: string) {
@@ -125,19 +131,19 @@ export class CustomService {
   }
   // toogleWishlist and remove item out of wishlist
   toggleWishlistButton2(userId: string, productId: string) {
-    console.log(productId);
-    // this.getProductById(productId);
-    console.log(this.editableProduct);
-    if (this.editableProduct) {
+    console.log(`toggleWislist`, userId, productId);
+    if (this.editableProduct && this.editableUser) {
       if (this.isExistedInWishlist(productId)) {
         this.removeItemOutOfWishlist(productId);
         this.removeItemOutOfWished(userId);
-        console.log('removed');
-      } else {
+        console.log(`removed pid ${productId} and uid ${userId}`);
+      } else if (!this.isExistedOnWished(userId)) {
         this.addItemToWishlist(productId);
         this.addUserToWished(userId);
-        console.log('added');
+        console.log(`added pid ${productId} and uid ${userId}`);
       }
+    } else {
+      this.router.navigate(['/login'], { replaceUrl: true });
     }
   }
 

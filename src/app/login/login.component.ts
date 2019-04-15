@@ -7,6 +7,11 @@ import { environment } from '@env/environment';
 import { Logger, I18nService, AuthenticationService } from '@app/core';
 import { CustomService } from '@app/custom.service';
 
+import SimpleCrypto from 'simple-crypto-js';
+
+const secretKey = 'secret';
+const simpleCrypto = new SimpleCrypto(secretKey);
+
 const log = new Logger('Login');
 
 @Component({
@@ -35,7 +40,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     if (this.authenticationService.isAuthenticated()) {
-      this.router.navigate(['/shop'], { replaceUrl: true });
+      this.router.navigate(['/wishlist'], { replaceUrl: true });
     }
 
     this.service.getUsers().subscribe(_user => {
@@ -44,7 +49,6 @@ export class LoginComponent implements OnInit {
 
     // console.log('credentials ' + this.authenticationService.credentials);
     // console.log('isAuthenticated ' + this.authenticationService.isAuthenticated());
-    // console.log('cookie ' + this.authenticationService.getCookie('username'));
   }
 
   login() {
@@ -96,10 +100,22 @@ export class LoginComponent implements OnInit {
     //   password: ['', Validators.required],
     //   remember: true
     // });
-    this.loginForm = this.formBuilder.group({
-      username: [this.authenticationService.getCookie('username'), Validators.required],
-      password: [this.authenticationService.getCookie('password'), Validators.required],
-      remember: false
-    });
+    if (localStorage.getItem('en_credentials')) {
+      // console.log(localStorage.getItem('en_credentials'));
+      this.loginForm = this.formBuilder.group({
+        username: [JSON.parse(localStorage.getItem('en_credentials')).username, Validators.required],
+        password: [
+          simpleCrypto.decrypt(JSON.parse(localStorage.getItem('en_credentials')).password),
+          Validators.required
+        ],
+        remember: false
+      });
+    } else {
+      this.loginForm = this.formBuilder.group({
+        username: ['', Validators.required],
+        password: ['', Validators.required],
+        remember: false
+      });
+    }
   }
 }

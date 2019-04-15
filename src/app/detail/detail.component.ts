@@ -41,5 +41,11 @@ export class DetailComponent implements OnInit {
         }
       });
     });
+
+    if (this.authenticationService.credentials) {
+      if (!this.service.editableUser) {
+        this.router.navigate(['/wishlist'], { replaceUrl: true });
+      }
+    }
   }
 }

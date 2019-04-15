@@ -6,7 +6,7 @@
         <h5 class="text-success text-center">{{ product.link | replaceStringPipe: '-':' ' | titlecase }}</h5>
       </a>
       <a [routerLink]="['/shop', product.clink, product.blink, product.link]">
-        <img class="img-fluid" src="{{ product.img_url }}" />
+        <img class="img-fluid" loading="lazy" src="{{ product.img_url }}" />
       </a>
       <h5 class="text-success">Price: {{ product.price }}</h5>
       <p>{{ product.dsc }}</p>
@@ -25,7 +25,7 @@
           [hidden]="!this.authenticationService.credentials"
           [class]="service.isExistedInWishlist(product.pid) ? 'circle-active' : 'circle'"
           (mouseenter)="service.getProductById(product.pid)"
-          (click)="service.toggleWishlistButton2(this.service.editableUser.uid, product.pid)"
+          (click)="service.toggleWishlistButton2(this.service.editableUser?.uid, product?.pid)"
           placement="top"
           ngbTooltip="{{ product.wishedby.length }}"
         >

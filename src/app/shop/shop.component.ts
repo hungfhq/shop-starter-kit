@@ -15,7 +15,6 @@ export class ShopComponent implements OnInit {
   categories: Array<any[]>;
   products$: Observable<any[]>;
   products: any[];
-  wishlistLength = 0;
 
   public show = 'block';
   private searchTerms = new Subject<string>();
@@ -41,11 +40,6 @@ export class ShopComponent implements OnInit {
     this.service.getProducts().subscribe(products => {
       this.products = products;
     });
-    if (this.service.editableUser) {
-      this.wishlistLength = this.service.editableUser.wishlist.length;
-    } else if (localStorage) {
-      this.wishlistLength = parseInt(localStorage.getItem('wishlistLength'), 10);
-    }
   }
 
   delayBlur() {
@@ -73,8 +67,6 @@ export class ShopComponent implements OnInit {
 
   logout() {
     this.authenticationService.logout().subscribe(() => this.router.navigate([''], { replaceUrl: true }));
-    // this.user = null;
     console.log('do logout() on shop');
-    // console.log("user", this.user);
   }
 }
